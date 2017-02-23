@@ -1,4 +1,6 @@
-import numpy as np
+import pandas as pd
+import numpy  as np
+import matplotlib.pyplot as plt
 
 class LinearRegression(object):
 
@@ -11,11 +13,13 @@ class LinearRegression(object):
         
         self.param = np.linalg.inv(np.dot(xt, x)).dot(xt).dot(y)
 
-
     def predict(self, x):
         x = np.hstack([np.ones([x.shape[0], 1]), x])
         return np.dot(x, self.param)
     
+    def precision(self, x, y):
+        pass
+
     def rss(self, x, y):
         """ Residual Sum of Squares """
         x = np.hstack([np.ones([x.shape[0], 1]), x])
@@ -25,24 +29,30 @@ class LinearRegression(object):
 
 
 def main():
-    n = 100000
-    p = 1000
-    k = 1
-
-    x = np.random.random([n, p])
-    y = np.random.random([n, k])
+    train = pd.read_table("datasets/zipcode/zip.train", 
+                          delim_whitespace=True,
+                          header=None,
+                          index_col=0)
+    test  = pd.read_table("datasets/zipcode/zip.test", 
+                          delim_whitespace=True,
+                          header=None,
+                          index_col=0)
+    
+    xtrain = train.values
+    xtest  = test .values
+    ytrain = pd.get_dummies(train.index).values
+    ytest  = pd.get_dummies(test .index).values
 
     m = LinearRegression()
-    m.param = np.random.random([p + 1, 1])
+    m.train(xtrain,ytrain)
 
-    print(m.rss(x, y))
-    m.train(x,y)
-    print(m.rss(x, y))
+    ptrain = m.predict(xtrain).argmax(axis=1)
+    ptest  = m.predict(xtest ).argmax(axis=1)
 
-    #yh = m.predict(x)
-    #print(yh)
+    print(1.0 - (np.sum(ptrain == train.index.values) / float(len(ptrain)))) 
+    print(1.0 - (np.sum(ptest  == test .index.values) / float(len(ptest )))) 
 
-
+    print("end")
 
 if __name__ == "__main__":
     main()
