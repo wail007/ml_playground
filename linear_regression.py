@@ -16,9 +16,6 @@ class LinearRegression(object):
     def predict(self, x):
         x = np.hstack([np.ones([x.shape[0], 1]), x])
         return np.dot(x, self.param)
-    
-    def precision(self, x, y):
-        pass
 
     def rss(self, x, y):
         """ Residual Sum of Squares """
@@ -37,22 +34,15 @@ def main():
                           delim_whitespace=True,
                           header=None,
                           index_col=0)
-    
-    xtrain = train.values
-    xtest  = test .values
-    ytrain = pd.get_dummies(train.index).values
-    ytest  = pd.get_dummies(test .index).values
 
     m = LinearRegression()
-    m.train(xtrain,ytrain)
+    m.train(train.values, pd.get_dummies(train.index).values)
 
-    ptrain = m.predict(xtrain).argmax(axis=1)
-    ptest  = m.predict(xtest ).argmax(axis=1)
+    ptrain = m.predict(train.values).argmax(axis=1)
+    ptest  = m.predict(test .values).argmax(axis=1)
 
-    print(1.0 - (np.sum(ptrain == train.index.values) / float(len(ptrain)))) 
-    print(1.0 - (np.sum(ptest  == test .index.values) / float(len(ptest )))) 
-
-    print("end")
+    print("train precision: %f" % (np.sum(ptrain == train.index.values) / float(len(ptrain))))
+    print("test  precision: %f" % (np.sum(ptest  == test .index.values) / float(len(ptest ))))
 
 if __name__ == "__main__":
     main()
