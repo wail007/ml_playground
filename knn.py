@@ -36,7 +36,7 @@ def main():
                           header=None,
                           index_col=0)
 
-    knn = KNN(5, True)
+    knn = KNN(3, True)
     knn.train(train.values, pd.get_dummies(train.index).values)
 
     ptrain = knn.predict(train.values).argmax(axis=1)
