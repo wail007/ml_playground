@@ -22,7 +22,7 @@ class LinearRegression(object):
         x = np.hstack([np.ones([x.shape[0], 1]), x])
         r = y - np.dot(x, self.param)
 
-        return np.sum(np.dot(r.transpose(), r), axis=0)
+        return np.trace(np.dot(r.transpose(), r))
 
 
 def main():
@@ -36,7 +36,14 @@ def main():
                           index_col=0)
 
     m = LinearRegression()
+
+    m.param = np.random.random([257,10])
+    print(m.rss(train.values, pd.get_dummies(train.index).values))
+    print(m.rss(test .values, pd.get_dummies(test .index).values))    
+
     m.train(train.values, pd.get_dummies(train.index).values)
+    print(m.rss(train.values, pd.get_dummies(train.index).values))
+    print(m.rss(test .values, pd.get_dummies(test .index).values))
 
     ptrain = m.predict(train.values).argmax(axis=1)
     ptest  = m.predict(test .values).argmax(axis=1)
