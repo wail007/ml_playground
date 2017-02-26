@@ -7,12 +7,6 @@ class LinearRegression(object):
     def __init__(self):
         self.param = None
 
-    def train(self, x, y):
-        x  = np.hstack([np.ones([x.shape[0], 1]), x])
-        xt = x.transpose()
-        
-        self.param = np.linalg.inv(np.dot(xt, x)).dot(xt).dot(y)
-
     def predict(self, x):
         x = np.hstack([np.ones([x.shape[0], 1]), x])
         return np.dot(x, self.param)
@@ -22,7 +16,19 @@ class LinearRegression(object):
         x = np.hstack([np.ones([x.shape[0], 1]), x])
         r = y - np.dot(x, self.param)
 
-        return np.trace(np.dot(r.transpose(), r))
+        return np.trace(np.dot(r.transpose(), r)) / float(x.shape[0])
+
+def train_least_squares(m, x, y):
+    x  = np.hstack([np.ones([x.shape[0], 1]), x])
+    xt = x.transpose()
+
+    m.param = np.linalg.inv(np.dot(xt, x)).dot(xt).dot(y)
+
+def train_ridge(m, x, y, alpha):
+    xt = x.transpose()
+
+    m.param = np.linalg.inv(np.dot(xt, x) + alpha * np.eye(x.shape[0])).dot(xt).dot(y)
+    m.param = np.hstack([np.mean(y, axis=0, keepdims=True), m.param])
 
 
 def main():
@@ -41,7 +47,7 @@ def main():
     print(m.rss(train.values, pd.get_dummies(train.index).values))
     print(m.rss(test .values, pd.get_dummies(test .index).values))    
 
-    m.train(train.values, pd.get_dummies(train.index).values)
+    train_least_squares(m, train.values, pd.get_dummies(train.index).values)
     print(m.rss(train.values, pd.get_dummies(train.index).values))
     print(m.rss(test .values, pd.get_dummies(test .index).values))
 
