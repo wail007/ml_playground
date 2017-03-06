@@ -28,7 +28,9 @@ def train_ridge(m, x, y, alpha):
     xt = x.transpose()
 
     m.param = np.linalg.inv(np.dot(xt, x) + alpha * np.eye(x.shape[1])).dot(xt).dot(y)
-    m.param = np.vstack([np.mean(y, axis=0, keepdims=True), m.param])
+    bias    = np.mean(y, axis=0, keepdims=True) - np.dot(np.mean(x, axis=0, keepdims=True), m.param)
+    
+    m.param = np.vstack([bias, m.param])
 
 def train_lasso(m, x, y, alpha):
     pass

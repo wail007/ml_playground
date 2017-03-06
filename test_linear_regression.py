@@ -77,8 +77,10 @@ def test_zipcode_ridge():
 
 
 def main():
-    test_zipcode_ridge()
+    print("Least Squares:")
     test_zipcode_least_squares()
+    print("Ridge:")
+    test_zipcode_ridge()
 
 
 if __name__ == "__main__":
