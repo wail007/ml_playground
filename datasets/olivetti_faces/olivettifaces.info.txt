@@ -1,0 +1,3 @@
+Grayscale faces 8 bit [0-255], a few images of several different people.
+400 total images, 64x64 size.
+From the Oivetti database at ATT.
