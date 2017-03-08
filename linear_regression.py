@@ -12,7 +12,7 @@ class _LinearModel(object):
         x = np.hstack([np.ones([x.shape[0], 1]), x])
         return np.dot(x, self.w)
     
-    def rss(self, x, y):
+    def cost(self, x, y):
         """ Residual Sum of Squares """
         x = np.hstack([np.ones([x.shape[0], 1]), x])
         r = y - np.dot(x, self.w)
@@ -41,23 +41,23 @@ class RidgeRegression(_LinearModel):
         
         alpha      = 0.0
         best_alpha = 0.0
-        best_rss   = float("inf")
-        old_rss    = float("inf")
-        new_rss    = float("inf") 
+        best_cost   = float("inf")
+        old_cost    = float("inf")
+        new_cost    = float("inf") 
 
         while True:
             self._fit(xtrain, ytrain, alpha)
 
-            new_rss = self.rss(xval, yval)
-            if new_rss < best_rss:
-                best_rss   = new_rss
+            new_cost = self.cost(xval, yval)
+            if new_cost < best_cost:
+                best_cost   = new_cost
                 best_alpha = alpha
-                print("rss: %f, alpha: %f" % (best_rss, best_alpha))
+                print("cost: %f, alpha: %f" % (best_cost, best_alpha))
 
-            if abs(new_rss - old_rss) < self.min_change:
+            if abs(new_cost - old_cost) < self.min_change:
                 break
 
-            old_rss = new_rss
+            old_cost = new_cost
             
             alpha += self.incr
         

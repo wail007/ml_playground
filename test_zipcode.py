@@ -15,19 +15,28 @@ def main():
 
     estimators = {
         "LinearRegression" : LinearRegression(),
-        "RidgeRegression"  : RidgeRegression(incr=0.7, min_change=0.0000001),
-        "KNN"              : KNN(3)
+        "RidgeRegression"  : RidgeRegression(incr=0.1, min_change=0.00001),
+        #"KNN"              : KNN(3)
     }
-    
-    for name, estimator in estimators.items():
-        estimator.fit(train.values, pd.get_dummies(train.index).values)
 
-        ptrain = estimator.predict(train.values).argmax(axis=1)        
-        ptest  = estimator.predict(test .values).argmax(axis=1)
+    xtrain = np.hstack([train.values, train.values*train.values])
+    ytrain = train.index.values
+
+    xtest = np.hstack([test.values, test.values*test.values])
+    ytest = test.index.values
+
+    ytrain_dummy = pd.get_dummies(train.index).values
+    ytest_dummy  = pd.get_dummies(test .index).values
+
+    for name, estimator in estimators.items():
+        estimator.fit(xtrain, ytrain_dummy)
+
+        ptrain = estimator.predict(xtrain).argmax(axis=1)        
+        ptest  = estimator.predict(xtest ).argmax(axis=1)
 
         print(name + ":")
-        print("train precision: %f" % (np.sum(ptrain == train.index.values) / float(len(ptrain))))
-        print("test  precision: %f" % (np.sum(ptest  == test .index.values) / float(len(ptest ))))
+        print("train precision: %f" % (np.sum(ptrain == ytrain) / float(len(ptrain))))
+        print("test  precision: %f" % (np.sum(ptest  == ytest ) / float(len(ptest ))))
 
     
 if __name__ == "__main__":
