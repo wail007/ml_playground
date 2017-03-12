@@ -29,9 +29,9 @@ def main():
 
     # Fit estimators
     ESTIMATORS = {
-        "LinearRegression": LinearRegression(),
-        "RidgeRegression" : RidgeRegression(incr=0.3, min_change=0.1),
-        "knn"             : KNN(k=5)
+        "LeastSquareRegression": LeastSquareRegression(),
+        "RidgeRegression"      : RidgeRegression(incr=0.3, min_change=0.1),
+        "knn"                  : KNN(k=5)
     }
 
     y_test_predict = dict()

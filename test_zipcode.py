@@ -14,9 +14,10 @@ def main():
                           index_col=0)
 
     estimators = {
-        "LinearRegression" : LinearRegression(),
-        "RidgeRegression"  : RidgeRegression(incr=0.1, min_change=0.00001),
-        #"KNN"              : KNN(3)
+        #"LeastSquareClassification": LeastSquareClassification(),
+        #"RidgeClassification"      : RidgeClassification(incr=0.1, min_change=0.000001),
+        "LDAClassification"        : LDAClassification(),
+        #"KNN"                      : KNN(3)
     }
 
     xtrain = np.hstack([train.values, train.values*train.values])
@@ -31,12 +32,24 @@ def main():
     for name, estimator in estimators.items():
         estimator.fit(xtrain, ytrain_dummy)
 
-        ptrain = estimator.predict(xtrain).argmax(axis=1)        
-        ptest  = estimator.predict(xtest ).argmax(axis=1)
-
         print(name + ":")
-        print("train precision: %f" % (np.sum(ptrain == ytrain) / float(len(ptrain))))
-        print("test  precision: %f" % (np.sum(ptest  == ytest ) / float(len(ptest ))))
+        print("train precision: %f" % estimator.precision(xtrain, ytrain))
+        print("test  precision: %f" % estimator.precision(xtest , ytest ))
+        """
+        p = estimator.predict(xtest)
+        wrong_arg = p != ytest
+
+        wrong_x = test.values[wrong_arg]
+        wrong_y = ytest[wrong_arg]
+        wrong_p = p[wrong_arg]
+
+        wrong_x = wrong_x.reshape([len(wrong_x), 16, -1])
+
+        for i in xrange(len(wrong_y)):
+            print("Expected: %d, Predicted: %d" % (wrong_y[i], wrong_p[i]))
+            imgplot = plt.imshow(wrong_x[i], cmap='gray')
+            plt.show()  
+        """
 
     
 if __name__ == "__main__":
