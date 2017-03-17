@@ -12,7 +12,6 @@ class _LinearModel(object):
         pass
 
     def predict(self, x):
-        x = np.hstack([np.ones([len(x), 1]), x])
         return np.dot(x, self.w)
     
     def cost(self, x, y):
@@ -29,12 +28,11 @@ class LeastSquareRegression(_LinearModel):
         super(LeastSquareRegression, self).__init__()
 
     def fit(self, x, y):
-        x  = np.hstack([np.ones([x.shape[0], 1]), x])
-        self.w = np.linalg.pinv(x).dot(y)
+        xt = x.transpose()
+        self.w = np.linalg.pinv(np.dot(xt, x)).dot(xt).dot(y)
 
     def cost(self, x, y):
         """ Residual Sum of Squares """
-        x = np.hstack([np.ones([len(x), 1]), x])
         r = y - np.dot(x, self.w)
         rt= np.transpose(r)
 
@@ -64,7 +62,7 @@ class RidgeRegression(LeastSquareRegression):
             if new_cost < best_cost:
                 best_cost   = new_cost
                 best_alpha = alpha
-                print("cost: %f, alpha: %f" % (best_cost, best_alpha))
+                #print("cost: %f, alpha: %f" % (best_cost, best_alpha))
 
             if abs(new_cost - old_cost) < self.min_change:
                 break
@@ -77,9 +75,10 @@ class RidgeRegression(LeastSquareRegression):
             
 
     def _fit(self, x, y, alpha):
+        x  = x[:,1:]
         xt = np.transpose(x)
 
-        self.w = np.linalg.inv(np.dot(xt, x) + alpha * np.eye(x.shape[1])).dot(xt).dot(y)
+        self.w = np.linalg.pinv(np.dot(xt, x) + alpha * np.eye(x.shape[1])).dot(xt).dot(y)
         bias   = np.mean(y, axis=0, keepdims=True) - np.dot(np.mean(x, axis=0, keepdims=True), self.w)
     
         self.w = np.vstack([bias, self.w])
