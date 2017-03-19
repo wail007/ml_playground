@@ -43,7 +43,7 @@ def main():
     estimators = {
         "Least Square Classification"                        : LeastSquareClassification(),
         "Multi-class Logistic Regression - gradient descent" : MCLogisticRegression(solver='gradient', alpha=1e-3 , e=1e-4),
-        "Multi-class Logistic Regression - newton's method"  : MCLogisticRegression(solver='newton'  , alpha=1    , e=1e-4)
+        "Multi-class Logistic Regression - newton's method"  : MCLogisticRegression(solver='newton'  , alpha=1.0  , e=1e-4)
     }
 
     for name, estimator in estimators.items():

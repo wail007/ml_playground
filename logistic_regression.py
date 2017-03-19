@@ -1,23 +1,26 @@
-import numpy as np
-import solver
+import numpy  as np
+import solver as slvr
 from activation import sigmoid, sigmoid_log
 
 
 class LogisticRegression(object):
-    def __init__(self, solver='gradient', alpha=1e-3, e=1e-3, verbose=False):
+    def __init__(self, solver='gradient', reg=None, alpha=1e-3, e=1e-3, verbose=False):
         self.w = None
         self.e = e
         self.verbose = verbose
-        self.solver = solver
         self.alpha = alpha
+
+        if solver == 'newton':
+            self.solver = slvr.Newton(alpha, e, verbose)
+        else:
+            self.solver = slvr.GradientDescent(alpha, e, verbose)
+
+        if reg:
+            self.solver = slvr.ValidationSet(self.solver, 0.7, False, e, verbose)
 
     def fit(self, x, t):
         self.w = np.zeros(x.shape[1])
-
-        if self.solver == 'gradient':
-            solver.gradient_descent(self, x, t, self.alpha, self.e, self.verbose)
-        elif self.solver == 'newton':
-            solver.newton(self, x, t, self.e, self.verbose)
+        self.solver.solve(self, x, t)
 
     def predict(self, x):
         return np.rint(self.probability(x))
@@ -41,6 +44,29 @@ class LogisticRegression(object):
         y = self.predict(x)
         return (1.0 / len(y)) * np.sum(y == t)
 
+    def _cost(self, x, t):
+        a = np.dot(x, self.w)
+        return -np.sum(t * sigmoid_log(a) + (1 - t) * sigmoid_log(-a), axis=0, keepdims=True)
+
+    def _gradient(self, x, t):
+        y = sigmoid(np.dot(x, self.w))
+        return np.dot(np.transpose(x), y - t)
+
+    def _hessian(self, x, t):
+        y = sigmoid(np.dot(x, self.w))
+        return np.dot(np.transpose(x) * (y * (1 - y)), x)
+
+    def _cost_L2(self, x, t, reg):
+        return self._cost(x, t) + reg * np.dot(self.w[1:], self.w[1:]) 
+
+    def _gradient_L2(self, x, t, reg):
+        g = self._gradient(x, t)
+        g[1:] += 2.0 * reg * self.w[1:]
+        return g
+
+    
+
+    
     
 class MCLogisticRegression(object):
     def __init__(self, solver='gradient', alpha=1e-3, e=1e-3, verbose=False):
